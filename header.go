@@ -14,6 +14,9 @@ type Header struct {
 	IndexCount int
 	Length     int
 	Indexes    IndexEntries
+  // Offset of the beginning of this header from the start of the file when the
+  // RPM is opened with ReadPackageFile
+  Offset     int
 }
 
 const (

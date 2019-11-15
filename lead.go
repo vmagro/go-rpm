@@ -17,6 +17,7 @@ type Lead struct {
 	Architecture    int
 	OperatingSystem int
 	SignatureType   int
+	Length          int
 }
 
 const (
@@ -55,6 +56,7 @@ func ReadPackageLead(r io.Reader) (*Lead, error) {
 		Name:            string(buf[10:76]),
 		OperatingSystem: int(binary.BigEndian.Uint16(buf[76:78])),
 		SignatureType:   int(binary.BigEndian.Uint16(buf[78:80])),
+		Length:          r_LeadLength,
 	}
 	if lead.VersionMajor < 3 || lead.VersionMajor > 4 {
 		return nil, ErrUnsupportedVersion

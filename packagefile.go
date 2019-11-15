@@ -17,8 +17,9 @@ import (
 // A PackageFile is an RPM package definition loaded directly from the package
 // file itself.
 type PackageFile struct {
-	Lead    Lead
-	Headers []Header
+	Lead          Lead
+	Headers       []Header
+	HeadersLength int
 
 	path     string
 	fileSize uint64
@@ -43,6 +44,7 @@ func ReadPackageFile(r io.Reader) (*PackageFile, error) {
 		return nil, err
 	}
 	p.Lead = *lead
+	p.HeadersLength += r_LeadLength
 
 	// read signature and header headers
 	p.Headers = make([]Header, r_headerCount)
@@ -51,10 +53,13 @@ func ReadPackageFile(r io.Reader) (*PackageFile, error) {
 		if err != nil {
 			return nil, err
 		}
+		p.HeadersLength += h.Length
 
 		// pad to next header except on last header
 		if i < r_headerCount-1 {
-			if _, err := io.CopyN(ioutil.Discard, r, int64(8-(h.Length%8))%8); err != nil {
+			discard := 8 - (h.Length%8)%8
+			p.HeadersLength += discard
+			if _, err := io.CopyN(ioutil.Discard, r, int64(discard); err != nil {
 				return nil, err
 			}
 		}
